@@ -1,5 +1,4 @@
 const shortid=require('shortid')
-//const validUrl=require('valid-url')
 const validUrl=require('url-validation')
 const urlModel=require('../model/urlModel')
 
