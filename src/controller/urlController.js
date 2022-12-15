@@ -19,7 +19,7 @@ redisClient.on("connect", async function () {
     console.log("Connected to Redis..");
 });
 
-const SET_ASYNC = promisify(redisClient.SET).bind(redisClient)
+const SETEX_ASYNC = promisify(redisClient.SETEX).bind(redisClient)
 const GET_ASYNC = promisify(redisClient.GET).bind(redisClient)
 
 
@@ -28,7 +28,6 @@ const shortenUrl = async function (req, res) {
     try {
         const { longUrl } = req.body
         const urlCode = shortid.generate().toLowerCase()
-        //let shortUrl = `${req.protocol}://${req.headers.host}/` + urlCode
 
         if (Object.keys(req.body).length == 0) return res.status(400).send({ status: false, message: "No data given in request body" })
         if (!longUrl) return res.status(400).send({ status: false, message: "Long Url should be present" })
@@ -41,13 +40,13 @@ const shortenUrl = async function (req, res) {
         cachedUrl=JSON.parse(cachedUrl)
         if(cachedUrl) return res.status(200).send({status:true, data:cachedUrl})
         const urlExist = await urlModel.findOne({ longUrl: longUrl }).select({ _id: 0, __v: 0 })
-        await SET_ASYNC(`${longUrl}`, JSON.stringify(urlExist))
+        await SETEX_ASYNC(`${longUrl}`, 86400, JSON.stringify(urlExist))
         if (urlExist) return res.status(200).send({ status: true, data: urlExist })
         else {
             const baseUrl = 'http://localhost:3000'
             const shortUrl = baseUrl + '/' + urlCode
             const url = await urlModel.create({ longUrl, shortUrl, urlCode })
-            await SET_ASYNC(`${longUrl}`, JSON.stringify(url))
+            await SETEX_ASYNC(`${longUrl}`,86400, JSON.stringify(url))
             const data = {
                 longUrl: longUrl,
                 shortUrl: shortUrl,
@@ -72,7 +71,7 @@ const getUrl = async function (req, res) {
         if (cachedUrl) return res.status(302).redirect(JSON.parse(cachedUrl))
         else {
             const findUrl = await urlModel.findOne({ urlCode: urlCode })
-            await SET_ASYNC(`${urlCode}`, JSON.stringify(findUrl.longUrl))
+            await SETEX_ASYNC(`${urlCode}`, 86400 , JSON.stringify(findUrl.longUrl))
             if (findUrl) return res.status(302).redirect(findUrl.longUrl)
             else return res.status(404).send({ status: false, message: "No Url Found" })
         }
