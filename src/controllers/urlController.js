@@ -1,6 +1,6 @@
 const shortid = require('shortid')
 const validUrl = require('url-validation')
-const urlModel = require('../model/urlModel')
+const urlModel = require('../models/urlModel')
 const redis = require('redis')
 const { promisify } = require('util')
 
@@ -71,7 +71,7 @@ const getUrl = async function (req, res) {
         if (cachedUrl) return res.status(302).redirect(JSON.parse(cachedUrl))
         else {
             const findUrl = await urlModel.findOne({ urlCode: urlCode })
-            if (findUrl) {
+            if (findUrl) { 
             await SETEX_ASYNC(`${urlCode}`, 86400 , JSON.stringify(findUrl.longUrl))
             return res.status(302).redirect(findUrl.longUrl)
             }

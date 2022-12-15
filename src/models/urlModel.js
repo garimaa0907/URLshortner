@@ -1,7 +1,5 @@
 const mongoose=require('mongoose')
 
-//{ urlCode: { mandatory, unique, lowercase, trim }, longUrl: {mandatory, valid url}, shortUrl: {mandatory, unique} }
-
 const urlSchema=new mongoose.Schema({
     longUrl:{
         type:String,
@@ -23,4 +21,4 @@ const urlSchema=new mongoose.Schema({
     }
 })
 
-module.exports=mongoose.model('Url',urlSchema) 
+module.exports=mongoose.model ('Url',urlSchema) 
