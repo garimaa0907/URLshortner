@@ -44,7 +44,7 @@ const shortenUrl = async function (req, res) {
         if (urlExist) return res.status(200).send({ status: true, data: urlExist })
         else {
             const baseUrl = 'http://localhost:3000'
-            const shortUrl = baseUrl + '/' + urlCode
+            const shortUrl = baseUrl + '/' + urlCode 
             const url = await urlModel.create({ longUrl, shortUrl, urlCode })
             const data = {
                 longUrl: longUrl,
@@ -71,8 +71,10 @@ const getUrl = async function (req, res) {
         if (cachedUrl) return res.status(302).redirect(JSON.parse(cachedUrl))
         else {
             const findUrl = await urlModel.findOne({ urlCode: urlCode })
+            if (findUrl) {
             await SETEX_ASYNC(`${urlCode}`, 86400 , JSON.stringify(findUrl.longUrl))
-            if (findUrl) return res.status(302).redirect(findUrl.longUrl)
+            return res.status(302).redirect(findUrl.longUrl)
+            }
             else return res.status(404).send({ status: false, message: "No Url Found" })
         }
     }
