@@ -1,6 +1,6 @@
 const shortid = require('shortid')
 const validUrl = require('url-validation')
-const urlModel = require('../model/urlModel')
+const urlModel = require('../models/urlModel')
 const redis = require('redis')
 const { promisify } = require('util')
 
