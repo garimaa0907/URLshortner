@@ -46,12 +46,12 @@ const shortenUrl = async function (req, res) {
             const baseUrl = 'http://localhost:3000'
             const shortUrl = baseUrl + '/' + urlCode
             const url = await urlModel.create({ longUrl, shortUrl, urlCode })
-            await SETEX_ASYNC(`${longUrl}`,86400, JSON.stringify(url))
             const data = {
                 longUrl: longUrl,
                 shortUrl: shortUrl,
                 urlCode: urlCode
             }
+            await SETEX_ASYNC(`${longUrl}`,86400, JSON.stringify(data))
             return res.status(201).send({ status: true, data: data })
         }
     }
